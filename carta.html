@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú del Día - Café Bar Jhaque</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 20px; color: #212529; }
+        .contenedor { max-width: 680px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .barra-superior { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid #eee; padding-bottom: 12px; }
+        .barra-superior h1 { margin: 0; font-size: 22px; }
+        .btn-login {
+            background: #212529;
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .btn-login:hover { background: #00acc1; color: #fff; }
+        .categoria { margin-top: 20px; font-size: 18px; font-weight: bold; color: #00838f; border-bottom: 2px solid #e0f7fa; padding-bottom: 6px; }
+        .item { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #eee; }
+        .info { display: flex; align-items: center; gap: 12px; }
+        .info img { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; }
+        .nombre { font-weight: bold; }
+        .precio { font-weight: bold; color: #00acc1; white-space: nowrap; }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <div class="barra-superior">
+            <h1>Menú del Día - Café Bar Jhaque</h1>
+            <!-- Cambia la URL si publicas el login en una dirección concreta o deja /login para uso local -->
+            <a href="http://127.0.0.1:5000/login" class="btn-login">Iniciar sesión</a>
+        </div>
+
+        <div id="menu">Cargando menú...</div>
+    </div>
+
+    <script>
+        fetch("menu.json")
+            .then(res => res.json())
+            .then(productos => {
+                if (!Array.isArray(productos) || productos.length === 0) {
+                    document.getElementById("menu").innerHTML = "<p>No hay productos disponibles hoy.</p>";
+                    return;
+                }
+                const agrupados = {};
+                productos.forEach(p => {
+                    const cat = p.categoria || "General";
+                    if (!agrupados[cat]) agrupados[cat] = [];
+                    agrupados[cat].push(p);
+                });
+
+                let html = "";
+                Object.keys(agrupados).forEach(cat => {
+                    html += `<div class="categoria">${cat}</div>`;
+                    agrupados[cat].forEach(p => {
+                        const imgSrc = (p.imagen && p.imagen.startsWith("http"))
+                            ? p.imagen
+                            : "https://cdn-icons-png.flaticon.com/512/2738/2738730.png";
+                        const precioNum = Number(p.precio || 0).toFixed(2);
+                        html += `
+                            <div class="item">
+                                <div class="info">
+                                    <img src="${imgSrc}" alt="${p.nombre}">
+                                    <span class="nombre">${p.nombre}</span>
+                                </div>
+                                <span class="precio">${precioNum} €</span>
+                            </div>
+                        `;
+                    });
+                });
+                document.getElementById("menu").innerHTML = html;
+            })
+            .catch(() => {
+                document.getElementById("menu").innerHTML = "<p>No se pudo cargar la carta en este momento.</p>";
+            });
+    </script>
+</body>
+</html>

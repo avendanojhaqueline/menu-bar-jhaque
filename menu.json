@@ -1,0 +1,9 @@
+[
+    {
+        "id": 1,
+        "nombre": "chicharron",
+        "categoria": "comida",
+        "precio": 3.5,
+        "imagen": "/static/uploads/Gemini_Generated_Image_joa31rjoa31rjoa3.jfif"
+    }
+]
